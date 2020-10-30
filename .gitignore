@@ -29,7 +29,7 @@
 
 # Temporary Directories
 /bin
-/cmake.build
+/build
 
 # System Files
 .DS_Store

@@ -1,13 +1,16 @@
 #!/bin/bash
 #
-# build.sh
-# spectreScope
+# Copyright © 2020 Maxim Morozov. All rights reserved.
 #
-# Created by Maxim Morozov on 04/01/2018.
-# Copyright © 2018 Maxim Morozov. All rights reserved.
+# Created by Maxim Morozov on 30/10/2020.
+#
+# cpu-cache-line-size
+#
+# run.sh
 #
 
-BUILD_HOME=$(pwd)
-BUILD_BIN_HOME=${BUILD_HOME}/bin
+APPLICATION_HOME="$(pwd)"
+APPLICATION_BIN="${APPLICATION_HOME}/bin"
+APPLICATION_EXE="${APPLICATION_BIN}/cpu-cache-line-size"
 
-${BUILD_BIN_HOME}/cacheLineSize
+"${APPLICATION_EXE}"

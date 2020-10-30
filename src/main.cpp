@@ -1,11 +1,13 @@
 //
+// Copyright © 2020 Maxim Morozov. All rights reserved.
+//
+// Created by Maxim Morozov on 30/10/2020.
+//
+// cpu-cache-line-size
+//
 // main.cpp
-// cacheLineSize
 //
-// Created by Maxim Morozov on 06/01/2018.
-// Copyright © 2018 Maxim Morozov. All rights reserved.
-//
-// The utility prints the size of the cache line in bytes.
+// The utility prints the size of the cache line of CPU in bytes.
 //
 
 #include <iostream>
@@ -15,9 +17,9 @@
 
 #include <sys/sysctl.h>
 
-size_t cacheLineSize() {
-    size_t lineSize = 0;
-    size_t sizeOfLineSize = sizeof(lineSize);
+std::size_t getCPUCacheLineSize() {
+    std::size_t lineSize = 0;
+    std::size_t sizeOfLineSize = sizeof(lineSize);
     sysctlbyname("hw.cachelinesize", &lineSize, &sizeOfLineSize, 0, 0);
     return lineSize;
 }
@@ -26,15 +28,13 @@ size_t cacheLineSize() {
 
 #include <cstdio>
 
-size_t cacheLineSize() {
-    size_t lineSize = 0;
+std::size_t getCPUCacheLineSize() {
+    std::size_t lineSize = 0;
 
     FILE* const f = fopen("/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size", "r");
     if (f) {
         fscanf(f, "%ul", &lineSize);
         fclose(f);
-
-        return lineSize;
     }
 
     return lineSize;
@@ -46,18 +46,20 @@ size_t cacheLineSize() {
 #include <cstdint>
 #include <vector>
 
-size_t cacheLineSize() {
-    size_t lineSize = 0;
+std::size_t getCPUCacheLineSize() {
+    std::size_t lineSize = 0;
 
     DWORD bufferSize = 0;
     GetLogicalProcessorInformation(0, &bufferSize);
 
-    std::vector<uint8_t> buffer(bufferSize, 0);
+    std::vector<std::uint8_t> buffer(bufferSize, 0);
     SYSTEM_LOGICAL_PROCESSOR_INFORMATION* const procInfo = reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION*>(&buffer[0])
     GetLogicalProcessorInformation(procInfo, &bufferSize);
 
-    for (size_t i = 0, procInfoSize = bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION); i != procInfoSize; ++i) {
-        if (procInfo[i].Relationship == RelationCache && 1 == procInfo[i].Cache.Level) {
+    const std::size_t procInfoSize = bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+
+    for (std::size_t i = 0; i < procInfoSize; ++i) {
+        if (RelationCache == procInfo[i].Relationship && 1 == procInfo[i].Cache.Level) {
             lineSize = procInfo[i].Cache.LineSize;
             break;
         }
@@ -70,7 +72,7 @@ size_t cacheLineSize() {
     #error Unsupported platform
 #endif
 
-int main(int argc, const char * argv[]) {
-    std::cout << cacheLineSize() << std::endl;
+int main(int argc, const char* argv[]) {
+    std::cout << getCPUCacheLineSize() << std::endl;
     return 0;
 }
