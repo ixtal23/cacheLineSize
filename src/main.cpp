@@ -72,7 +72,8 @@ std::size_t getCPUCacheLineSize() {
     #error Unsupported platform
 #endif
 
-int main(int argc, const char* argv[]) {
+int main(int, const char* []) {
     std::cout << getCPUCacheLineSize() << std::endl;
+
     return 0;
 }
